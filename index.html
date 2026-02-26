@@ -1,0 +1,439 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="VPS Computer - Diploma Courses in Kalyan Kendra Township, Begusarai">
+    <title>VPS Computer - Diploma Courses</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ffcc;
+            --secondary: #b026ff;
+            --accent: #ff3366;
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            width: 100%;
+            height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #particle-canvas {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .cinematic-overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.85) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .content-container {
+            position: relative;
+            z-index: 10;
+            text-align: center;
+            width: 100%;
+            max-width: 900px;
+            padding: 2rem;
+            animation: fadeIn 2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(40px) scale(0.95);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0) scale(1);
+                filter: blur(0);
+            }
+        }
+
+        .header-title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(3rem, 6vw, 5rem);
+            font-weight: 700;
+            letter-spacing: 6px;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 204, 0.2);
+        }
+
+        .location-text {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 300;
+            letter-spacing: 4px;
+            color: #b3b3b3;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+        }
+
+        .course-text {
+            font-size: clamp(1.2rem, 2.5vw, 1.6rem);
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 3.5rem;
+            letter-spacing: 5px;
+            text-transform: uppercase;
+            text-shadow: 0 0 25px rgba(176, 38, 255, 0.5);
+            animation: pulseText 4s infinite alternate;
+        }
+
+        @keyframes pulseText {
+            0% {
+                text-shadow: 0 0 20px rgba(176, 38, 255, 0.3);
+            }
+
+            100% {
+                text-shadow: 0 0 40px rgba(176, 38, 255, 0.8), 0 0 10px rgba(255, 255, 255, 0.5);
+            }
+        }
+
+        .explore-box {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 3rem 2rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(255, 255, 255, 0.03);
+            transition: all 0.5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .explore-box::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.05) 0%, transparent 40%);
+            pointer-events: none;
+        }
+
+        .explore-box:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 30px rgba(0, 255, 204, 0.1), inset 0 0 25px rgba(255, 255, 255, 0.05);
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .explore-title {
+            font-size: 1.2rem;
+            font-weight: 400;
+            color: #d1d1d1;
+            margin-bottom: 2.5rem;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            position: relative;
+            display: inline-block;
+        }
+
+        .explore-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, var(--primary), transparent);
+            border-radius: 2px;
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .modules-grid {
+            display: flex;
+            justify-content: center;
+            gap: 1.5rem;
+            flex-wrap: wrap;
+        }
+
+        .module-btn {
+            background: rgba(0, 0, 0, 0.4);
+            color: #ffffff;
+            font-family: 'Cinzel', serif;
+            font-size: 1.8rem;
+            font-weight: 700;
+            padding: 1.2rem 3rem;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 12px;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            transition: all 0.4s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 160px;
+        }
+
+        .module-btn::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0));
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        /* DCA Styling */
+        .module-btn:nth-child(1):hover {
+            border-color: var(--primary);
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--primary);
+            box-shadow: 0 0 25px rgba(0, 255, 204, 0.25), inset 0 0 15px rgba(0, 255, 204, 0.15);
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        /* DFA Styling */
+        .module-btn:nth-child(2):hover {
+            border-color: var(--secondary);
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--secondary);
+            box-shadow: 0 0 25px rgba(176, 38, 255, 0.25), inset 0 0 15px rgba(176, 38, 255, 0.15);
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        /* ADCA Styling */
+        .module-btn:nth-child(3):hover {
+            border-color: var(--accent);
+            color: #ffffff;
+            text-shadow: 0 0 10px var(--accent);
+            box-shadow: 0 0 25px rgba(255, 51, 102, 0.25), inset 0 0 15px rgba(255, 51, 102, 0.15);
+            transform: scale(1.05) translateY(-5px);
+        }
+
+        .module-btn:hover::after {
+            opacity: 1;
+        }
+
+        @media (max-width: 768px) {
+            .content-container {
+                padding: 1.5rem;
+            }
+
+            .explore-box {
+                padding: 2rem 1.5rem;
+            }
+
+            .modules-grid {
+                gap: 1rem;
+                flex-direction: column;
+            }
+
+            .module-btn {
+                padding: 1.2rem 2rem;
+                width: 100%;
+                font-size: 1.5rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+    <div class="cinematic-overlay"></div>
+
+    <div class="content-container">
+        <h1 class="header-title">VPS Computer</h1>
+        <p class="location-text">Kalyan Kendra Township, Begusarai</p>
+        <p class="course-text">Diploma Course</p>
+
+        <div class="explore-box">
+            <h3 class="explore-title">Click on modules to explore</h3>
+
+            <div class="modules-grid">
+                <!-- Using void(0) if pages don't exist yet, but linking logically based on user history -->
+                <a href="DCA.html" class="module-btn" onclick="checkFile(event, this)">DCA</a>
+                <a href="DFA.html" class="module-btn" onclick="checkFile(event, this)">DFA</a>
+                <a href="ADCA.html" class="module-btn" onclick="checkFile(event, this)">ADCA</a>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Cinematic Particle System with Starfield effect
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2;
+                this.baseSize = this.size;
+                this.speedX = (Math.random() - 0.5) * 0.5;
+                this.speedY = (Math.random() - 0.5) * 0.5;
+                this.opacity = Math.random() * 0.8 + 0.1;
+                this.blinkSpeed = Math.random() * 0.02 + 0.005;
+                this.color = Math.random() > 0.5 ? '0, 255, 204' : '176, 38, 255';
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Twinkling effect
+                this.opacity -= this.blinkSpeed;
+                if (this.opacity <= 0.1 || this.opacity >= 0.9) {
+                    this.blinkSpeed = -this.blinkSpeed;
+                }
+
+                // Mouse interaction effect
+                let dx = mouse.x - this.x;
+                let dy = mouse.y - this.y;
+                let distance = Math.sqrt(dx * dx + dy * dy);
+
+                if (distance < 150) {
+                    if (this.size < this.baseSize * 3) {
+                        this.size += 0.2;
+                    }
+                } else if (this.size > this.baseSize) {
+                    this.size -= 0.1;
+                }
+
+                // Wrap around edges
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = `rgba(${this.color}, 0.5)`;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        let mouse = {
+            x: null,
+            y: null
+        }
+
+        window.addEventListener('mousemove', (event) => {
+            mouse.x = event.x;
+            mouse.y = event.y;
+        });
+
+        window.addEventListener('mouseout', () => {
+            mouse.x = null;
+            mouse.y = null;
+        });
+
+        function init() {
+            particlesArray = [];
+            let numberOfParticles = (canvas.width * canvas.height) / 6000;
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animate() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Draw gradient background
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+            );
+            gradient.addColorStop(0, '#0a0515');
+            gradient.addColorStop(1, '#020105');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+
+                // Connect close particles with thin lines
+                for (let j = i; j < particlesArray.length; j++) {
+                    const dx = particlesArray[i].x - particlesArray[j].x;
+                    const dy = particlesArray[i].y - particlesArray[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(100, 100, 255, ${0.1 - distance / 1200})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animate);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            init();
+        });
+
+        init();
+        animate();
+
+        // Prevent navigation if file doesn't exist (Optional helper)
+        function checkFile(e, el) {
+            // Un-comment the below lines if you want to prevent clicking before those files exist
+            // e.preventDefault();
+            // el.style.transform = 'scale(0.95)';
+            // setTimeout(() => el.style.transform = '', 150);
+            // window.location.href = el.getAttribute('href');
+        }
+    </script>
+</body>
+
+</html>

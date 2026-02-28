@@ -1,0 +1,485 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DCA Course - Cinematic Syllabus</title>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Montserrat:wght@300;400;600&display=swap"
+        rel="stylesheet">
+    <style>
+        :root {
+            --primary: #00ffcc;
+            --secondary: #b026ff;
+            --bg-dark: #050505;
+            --glass-bg: rgba(255, 255, 255, 0.03);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --card-hover: rgba(0, 255, 204, 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body,
+        html {
+            width: 100%;
+            min-height: 100%;
+            font-family: 'Montserrat', sans-serif;
+            background-color: var(--bg-dark);
+            color: #ffffff;
+            overflow-x: hidden;
+        }
+
+        #particle-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 1;
+        }
+
+        .cinematic-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0, 0, 0, 0.85) 100%);
+            z-index: 2;
+            pointer-events: none;
+        }
+
+        .container {
+            position: relative;
+            z-index: 10;
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 4rem 2rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 4rem;
+            animation: fadeInDown 1.5s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-40px);
+                filter: blur(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+                filter: blur(0);
+            }
+        }
+
+        .title {
+            font-family: 'Cinzel', serif;
+            font-size: clamp(2.5rem, 5vw, 4rem);
+            font-weight: 700;
+            letter-spacing: 4px;
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            background: linear-gradient(135deg, #ffffff, var(--primary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            text-shadow: 0 0 40px rgba(0, 255, 204, 0.3);
+        }
+
+        .subtitle {
+            font-size: clamp(1rem, 2vw, 1.3rem);
+            font-weight: 300;
+            letter-spacing: 6px;
+            color: var(--secondary);
+            text-transform: uppercase;
+            text-shadow: 0 0 20px rgba(176, 38, 255, 0.5);
+        }
+
+        .syllabus-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            width: 100%;
+        }
+
+        .module-card {
+            background: var(--glass-bg);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.02);
+            transition: all 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+            position: relative;
+            overflow: hidden;
+            opacity: 0;
+            transform: translateY(40px);
+            animation: fadeInUp 1s forwards;
+            cursor: default;
+        }
+
+        .module-card:nth-child(1) {
+            animation-delay: 0.2s;
+        }
+
+        .module-card:nth-child(2) {
+            animation-delay: 0.4s;
+        }
+
+        .module-card:nth-child(3) {
+            animation-delay: 0.6s;
+        }
+
+        .module-card:nth-child(4) {
+            animation-delay: 0.8s;
+        }
+
+        .module-card:nth-child(5) {
+            animation-delay: 1.0s;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .module-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at top right, rgba(255, 255, 255, 0.1) 0%, transparent 60%);
+            opacity: 0;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+
+        /* Module specific glow colors */
+        .module-card[data-module="1"] {
+            --hover-color: 255, 170, 0;
+        }
+
+        .module-card[data-module="2"] {
+            --hover-color: 0, 170, 255;
+        }
+
+        .module-card[data-module="3"] {
+            --hover-color: 43, 87, 154;
+        }
+
+        .module-card[data-module="4"] {
+            --hover-color: 33, 115, 70;
+        }
+
+        .module-card[data-module="5"] {
+            --hover-color: 210, 71, 38;
+        }
+
+        .module-card:hover {
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.8), 0 0 40px rgba(var(--hover-color), 0.2), inset 0 0 25px rgba(255, 255, 255, 0.05);
+            border-color: rgba(var(--hover-color), 0.4);
+            z-index: 5;
+        }
+
+        .module-card:hover::before {
+            opacity: 1;
+        }
+
+        .module-number {
+            font-family: 'Cinzel', serif;
+            font-size: 3.5rem;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.05);
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+            transition: all 0.5s ease;
+        }
+
+        .module-card:hover .module-number {
+            color: rgba(var(--hover-color), 0.3);
+            text-shadow: 0 0 30px rgba(var(--hover-color), 0.6);
+            transform: scale(1.1);
+        }
+
+        .module-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #ffffff;
+            margin-bottom: 1rem;
+            margin-top: 1.5rem;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 2;
+            transition: color 0.3s ease;
+        }
+
+        .module-card:hover .module-title {
+            color: rgba(var(--hover-color), 1);
+            text-shadow: 0 0 10px rgba(var(--hover-color), 0.5);
+        }
+
+        .module-desc {
+            font-size: 1rem;
+            color: #b3b3b3;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 5rem;
+            padding: 1rem 3rem;
+            background: rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+            font-family: 'Cinzel', serif;
+            font-size: 1.2rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 50px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            z-index: 10;
+        }
+
+        .back-btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 204, 0.2), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .back-btn:hover {
+            border-color: var(--primary);
+            box-shadow: 0 0 30px rgba(0, 255, 204, 0.4);
+            text-shadow: 0 0 10px var(--primary);
+            transform: translateY(-3px);
+            background: rgba(0, 255, 204, 0.05);
+        }
+
+        .back-btn:hover::before {
+            left: 100%;
+            transition: left 0.7s ease;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 3rem 1.5rem;
+            }
+
+            .module-card {
+                padding: 2rem 1.5rem;
+            }
+
+            .title {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+    <canvas id="particle-canvas"></canvas>
+    <div class="cinematic-overlay"></div>
+
+    <div class="container">
+        <div class="header">
+            <h1 class="title">DCA Course</h1>
+            <p class="subtitle">Diploma in Computer Applications</p>
+        </div>
+
+        <div class="syllabus-grid">
+            <div class="module-card" data-module="1">
+                <span class="module-number">01</span>
+                <h3 class="module-title">Computer Fundamentals</h3>
+                <p class="module-desc">Introduction to hardware, software, memory, input/output devices, and the basic
+                    architecture of computers.</p>
+            </div>
+
+            <div class="module-card" data-module="2">
+                <span class="module-number">02</span>
+                <h3 class="module-title">Windows OS</h3>
+                <p class="module-desc">Operating system basics, file management, and built-in tools like Notepad,
+                    WordPad, and MS Paint.</p>
+            </div>
+
+            <div class="module-card" data-module="3">
+                <span class="module-number">03</span>
+                <h3 class="module-title">Microsoft Word</h3>
+                <p class="module-desc">Document creation, formatting, page layout, mail merge, and advanced word
+                    processing techniques.</p>
+            </div>
+
+            <div class="module-card" data-module="4">
+                <span class="module-number">04</span>
+                <h3 class="module-title">Microsoft Excel</h3>
+                <p class="module-desc">Spreadsheets, formulas, functions, data analysis, charts, and basic financial
+                    calculations.</p>
+            </div>
+
+            <div class="module-card" data-module="5">
+                <span class="module-number">05</span>
+                <h3 class="module-title">Microsoft PowerPoint</h3>
+                <p class="module-desc">Creating engaging presentations, slide transitions, custom animations, and
+                    multimedia integration.</p>
+            </div>
+        </div>
+
+        <a href="vps_computer.html" class="back-btn">Back to Home</a>
+    </div>
+
+    <script>
+        // Cinematic Particle System (Network/Constellation effect)
+        const canvas = document.getElementById('particle-canvas');
+        const ctx = canvas.getContext('2d');
+
+        canvas.width = window.innerWidth;
+        canvas.height = window.innerHeight;
+
+        let particlesArray = [];
+
+        class Particle {
+            constructor() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 2 + 0.5;
+                this.speedX = (Math.random() - 0.5) * 0.3;
+                this.speedY = (Math.random() - 0.5) * 0.3;
+                this.opacity = Math.random() * 0.5 + 0.1;
+
+                // Color theme matching the general glow
+                const colors = ['0, 255, 204', '176, 38, 255', '255, 255, 255'];
+                this.color = colors[Math.floor(Math.random() * colors.length)];
+            }
+
+            update() {
+                this.x += this.speedX;
+                this.y += this.speedY;
+
+                // Wrap around edges softly
+                if (this.x < 0) this.x = canvas.width;
+                if (this.x > canvas.width) this.x = 0;
+                if (this.y < 0) this.y = canvas.height;
+                if (this.y > canvas.height) this.y = 0;
+            }
+
+            draw() {
+                ctx.fillStyle = `rgba(${this.color}, ${this.opacity})`;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = `rgba(${this.color}, 0.5)`;
+                ctx.fill();
+                ctx.shadowBlur = 0;
+            }
+        }
+
+        function initLayout() {
+            particlesArray = [];
+            // Responsive particle count
+            let numberOfParticles = Math.floor((canvas.width * canvas.height) / 8000);
+            for (let i = 0; i < numberOfParticles; i++) {
+                particlesArray.push(new Particle());
+            }
+        }
+
+        function animateParticles() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Subtle dark vignette gradient
+            const gradient = ctx.createRadialGradient(
+                canvas.width / 2, canvas.height / 2, 0,
+                canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height)
+            );
+            gradient.addColorStop(0, '#0d0714');
+            gradient.addColorStop(1, '#020104');
+            ctx.fillStyle = gradient;
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+            for (let i = 0; i < particlesArray.length; i++) {
+                particlesArray[i].update();
+                particlesArray[i].draw();
+
+                // Draw connecting constellation lines
+                for (let j = i; j < particlesArray.length; j++) {
+                    const dx = particlesArray[i].x - particlesArray[j].x;
+                    const dy = particlesArray[i].y - particlesArray[j].y;
+                    const distance = Math.sqrt(dx * dx + dy * dy);
+
+                    if (distance < 120) {
+                        ctx.beginPath();
+                        ctx.strokeStyle = `rgba(255, 255, 255, ${0.05 - distance / 2400})`;
+                        ctx.lineWidth = 0.5;
+                        ctx.moveTo(particlesArray[i].x, particlesArray[i].y);
+                        ctx.lineTo(particlesArray[j].x, particlesArray[j].y);
+                        ctx.stroke();
+                    }
+                }
+            }
+            requestAnimationFrame(animateParticles);
+        }
+
+        window.addEventListener('resize', () => {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            initLayout();
+        });
+
+        initLayout();
+        animateParticles();
+
+        // 3D Parallax Tilt Effect for Cards
+        const cards = document.querySelectorAll('.module-card');
+
+        cards.forEach(card => {
+            card.addEventListener('mousemove', (e) => {
+                const rect = card.getBoundingClientRect();
+                const x = e.clientX - rect.left; // x position within the element.
+                const y = e.clientY - rect.top;  // y position within the element.
+
+                const centerX = rect.width / 2;
+                const centerY = rect.height / 2;
+
+                const tiltX = (y - centerY) / 20; // max tilt degree
+                const tiltY = (centerX - x) / 20;
+
+                card.style.transform = `perspective(1000px) rotateX(${tiltX}deg) rotateY(${tiltY}deg) scale(1.02) translateY(-10px)`;
+            });
+
+            card.addEventListener('mouseleave', () => {
+                card.style.transform = `perspective(1000px) rotateX(0deg) rotateY(0deg) scale(1) translateY(0)`;
+            });
+        });
+    </script>
+</body>
+
+</html>
